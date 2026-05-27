@@ -1517,9 +1517,9 @@ function spawnEnemies(scene, currentStage) {
     for (let i = 0; i< enemyColumn; i++) {
         for (let j = 0; j<5; j++) {
             createUnit(scene, 600+i*30, 50 + (j * 100), 'enemy', enemies, {
-            hp: 40 + Math.floor(currentStage * (hp_coefficient + 3 * i)),
-            atk: 5 + Math.floor(currentStage * (atk_coefficient + 0.5 * i)),
-            def: 20 + Math.floor(currentStage * (def_coefficient + 1 * i)),
+            hp: 40 + Math.floor(currentStage * (hp_coefficient + 5)),
+            atk: 5 + Math.floor(currentStage * (atk_coefficient + 1)),
+            def: 20 + Math.floor(currentStage * (def_coefficient + 1)),
             range: 50, speed: 60, as: 1500, class: 'slime',
             scale: 0.2
         });
@@ -1535,9 +1535,9 @@ function spawnEnemies(scene, currentStage) {
             array = -Math.floor(i/2)
         }
         createUnit(scene, 600 + 30*enemyColumn, 250 + 100*array, 'enemy', enemies, {
-            hp: 40 + Math.floor(currentStage * (hp_coefficient + 3 * enemyColumn)),
-            atk: 5 + Math.floor(currentStage * (atk_coefficient + 0.5 * enemyColumn)),
-            def: 20 + Math.floor(currentStage * (def_coefficient + 1 * enemyColumn)),
+            hp: 40 + Math.floor(currentStage * (hp_coefficient + 5)),
+            atk: 5 + Math.floor(currentStage * (atk_coefficient + 1)),
+            def: 20 + Math.floor(currentStage * (def_coefficient + 1)),
             range: 50, speed: 60, as: 1500, class: 'slime',
             scale: 0.2
             });
@@ -1546,9 +1546,9 @@ function spawnEnemies(scene, currentStage) {
     //극후반부에 등장하는 거대 슬라임 인간
     else if (currentStage >= 50 && (currentStage%10 == 0)) {
         createUnit(scene, 1000, 250, 'enemy', enemies, {
-            hp: 1000 + Math.floor(currentStage * (hp_coefficient + 10 * enemyColumn)),
-            atk: 200 + Math.floor(currentStage * (atk_coefficient + 5 * enemyColumn)),
-            def: 200 + Math.floor(currentStage * (def_coefficient + 1 * enemyColumn)),
+            hp: 2000 + Math.floor(currentStage * (hp_coefficient + 15) * enemyColumn),
+            atk: 500 + Math.floor(currentStage * (atk_coefficient + 8) * enemyColumn),
+            def: 200 + Math.floor(currentStage * (def_coefficient + 1) * enemyColumn),
             range: 150, speed: 25, as: 2000, class: 'slime_human',
             scale: 0.7
         });
@@ -1565,8 +1565,8 @@ function spawnEnemies(scene, currentStage) {
         }
         createUnit(scene, 600 + 45*enemyColumn, 200 + 120*array, 'enemy', enemies, {
             hp: 100 + Math.floor(currentStage * (hp_coefficient + 5 * enemyColumn)),
-            atk: 20 + Math.floor(currentStage * (atk_coefficient + 1.5 * enemyColumn)),
-            def: 40 + Math.floor(currentStage * (def_coefficient + 1.3 * enemyColumn)),
+            atk: 20 + Math.floor(currentStage * (atk_coefficient + 2 * enemyColumn)),
+            def: 40 + Math.floor(currentStage * (def_coefficient + 1 * enemyColumn)),
             range: 80, speed: 40, as: 1100, class: 'slime_human',
             scale: 0.25
             });
