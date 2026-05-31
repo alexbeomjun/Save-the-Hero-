@@ -69,7 +69,7 @@ function showTitleScreen(scene) {
 
     // 3. 게임 시작 버튼 (컨테이너 구조)
     const btnBg = scene.add.rectangle(0, 0, 200, 60).setFillStyle(0x4a4a4a); 
-    const btnTxt = scene.add.text(0, 0, "게임 시작", { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
+    const btnTxt = scene.add.text(0, 0, "게임 시작", { fontSize: '24px', fill: '#ffffff',  fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
     
     const startBtn = scene.add.container(400, 400, [btnBg, btnTxt]);
     startBtn.setSize(200, 60).setInteractive().setDepth(102);
@@ -91,7 +91,7 @@ function showTitleScreen(scene) {
 
     // 4. 튜토리얼 버튼 (컨테이너 구조)
     const tutorialbtnBg = scene.add.rectangle(0, 0, 200, 60).setFillStyle(0x4a4a4a); // 원래 코드의 오류 수정
-    const tutorialbtnTxt = scene.add.text(0, 0, "튜토리얼 시작", { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
+    const tutorialbtnTxt = scene.add.text(0, 0, "튜토리얼 시작", { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
     
     const tutorialBtn = scene.add.container(400, 320, [tutorialbtnBg, tutorialbtnTxt]);
     tutorialBtn.setSize(200, 60).setInteractive().setDepth(102);
@@ -124,6 +124,7 @@ let stageText;
 let projectiles; // 투사체 그룹 추가
 let isGameStarted = false; // 게임 시작 여부 플래그
 let currentBgImage;
+let currentBgm = null;
 
 //튜토리얼 구현
 let tutorialStep = 0;          // 현재 튜토리얼 단계를 기록 (0이면 일반 게임)
@@ -164,7 +165,7 @@ function startFirstStage(scene) {
     // 3. 시작 영입 창 오픈 연출 (화면을 살짝 어둡게 깔고 카드를 띄웁니다)
     // 기존에 구현되어 있을 스테이지 클리어 암전창(블커) 예시
     const startMenuBg = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.6).setDepth(90);
-    const subTitle = scene.add.text(400, 120, "시작 유닛을 선택하세요", { fontSize: '30px', fill: '#ddd', padding: { top: 10, bottom: 10 } }).setOrigin(0.5).setDepth(91);
+    const subTitle = scene.add.text(400, 120, "시작 유닛을 선택하세요", { fontSize: '30px', fill: '#ddd', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5).setDepth(91);
     // 4. [기획 반영] 완전 랜덤으로 3개의 클래스 선정
     const randClass1 = CLASS_LIST[Math.floor(Math.random() * CLASS_LIST.length)];
     const randClass2 = CLASS_LIST[Math.floor(Math.random() * CLASS_LIST.length)];
@@ -217,7 +218,7 @@ function createTutorialUI(scene) {
 
     // [수정] "클릭하여 계속" 프롬프트 Y 좌표도 555에서 455로 올립니다.
     tutorialNextPrompt = scene.add.text(740, 445, "클릭하여 계속", {
-        fontSize: '14px', fill: '#aaaaaa'
+        fontSize: '14px', fill: '#aaaaaa',padding: { top: 5, bottom: 5 }
     }).setOrigin(1, 0.5).setDepth(201).setVisible(false);
 }
 
@@ -415,6 +416,53 @@ function finishTutorial(scene) {
 }
 
 function preload() {
+    const progressBar = this.add.graphics();
+    const progressBox = this.add.graphics();
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRect(240, 270, 320, 50); // 가로 320px, 세로 50px 사각형 트랙
+
+    // 2. "로딩 중..." 안내 텍스트 배치
+    const width = this.cameras.main.width;
+    const height = this.cameras.main.height;
+    const loadingText = this.make.text({
+        x: width / 2,
+        y: height / 2 - 50,
+        text: '로딩 중...',
+        style: { font: '20px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
+    }).setOrigin(0.5);
+
+    // 3. 퍼센트 표시 텍스트 (0%)
+    const percentText = this.make.text({
+        x: width / 2,
+        y: height / 2 - 5,
+        text: '0%',
+        style: { font: '18px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
+    }).setOrigin(0.5);
+
+
+    // ----------------------------------------------------
+    // 🔄 [Phaser 3 내장 로딩 이벤트 동기화]
+    // ----------------------------------------------------
+    // 💡 파일들이 다운로드될 때마다 value(0.0 ~ 1.0) 값이 실시간으로 들어옵니다.
+    this.load.on('progress', function (value) {
+        // 퍼센트 텍스트 갱신 (예: 45%)
+        percentText.setText(parseInt(value * 100) + '%');
+        
+        // 에셋 진행도 비율에 맞춰 내부 안쪽 바를 실시간으로 채워줍니다.
+        progressBar.clear();
+        progressBar.fillStyle(0xffffff, 1);
+        progressBar.fillRect(250, 280, 300 * value, 30);
+    });
+
+    // 💡 모든 에셋(이미지, 오디오 등)의 로드가 완벽히 끝났을 때 실행되는 이벤트
+    this.load.on('complete', () => {
+    // 사용한 로딩 UI 청소
+    progressBar.destroy();
+    progressBox.destroy();
+    loadingText.destroy();
+    percentText.destroy();
+    });
+
     // 임시 에셋 로드 (이미지가 없으면 사각형으로 대체됨)
     this.load.image('hero', 'https://labs.phaser.io/assets/sprites/phaser-dude.png');
     // --- 아군 전사 이미지 로드 ---
@@ -447,6 +495,12 @@ function preload() {
     this.load.image('slime_human_attack2', 'assets/slime_human_attack2.png');
     this.load.image('slime_human_die', 'assets/slime_human_die.png');
     this.load.image('slime_human_moving', 'assets/slime_human_moving.png');
+    // 슬라임 거인 이미지
+    this.load.image('slime_giant_idle', 'assets/slime_human_idle.png');
+    this.load.image('slime_giant_attack1', 'assets/slime_human_attack1.png');
+    this.load.image('slime_giant_attack2', 'assets/slime_human_attack2.png');
+    this.load.image('slime_giant_die', 'assets/slime_human_die.png');
+    this.load.image('slime_giant_moving', 'assets/slime_human_moving.png');
     // 투사체 이미지
     this.load.image('arrow', 'assets/projectile_arrow.png');
     this.load.image('magic_orb', 'assets/projectile_magic_orb.png');
@@ -465,6 +519,21 @@ function preload() {
     this.load.image('bg_field', 'assets/bg_field.png');
     this.load.image('bg_night', 'assets/bg_night.png');
     this.load.image('bg_slime', 'assets/bg_slime.png');
+
+    //bgm
+    this.load.audio('bgm_field', 'assets/audio/bgm_field.mp3');
+    this.load.audio('bgm_night', 'assets/audio/bgm_night.mp3');
+    this.load.audio('bgm_slime', 'assets/audio/bgm_slime.mp3');
+
+    //sfx
+    this.load.audio('sfx_upgrade_hp', 'assets/audio/sfx_upgrade_hp.ogg');
+    this.load.audio('sfx_upgrade_atk', 'assets/audio/sfx_upgrade_atk.ogg');
+    this.load.audio('sfx_upgrade_def', 'assets/audio/sfx_upgrade_def.ogg');
+    this.load.audio('sfx_mage_hit', 'assets/audio/sfx_mage_hit.ogg');
+    this.load.audio('sfx_archer_shoot', 'assets/audio/sfx_archer_shoot.ogg');
+    this.load.audio('sfx_swing', 'assets/audio/sfx_swing.ogg');
+    this.load.audio('sfx_stage_clear', 'assets/audio/sfx_stage_clear.ogg');
+    this.load.audio('sfx_game_over', 'assets/audio/sfx_game_over.ogg');
 }
 
 function create() {
@@ -513,9 +582,9 @@ function getRandomMultiplier(min = 0.7, max = 1.3) {
 const UNIT_TEMPLATES = {
     WARRIOR: {
         texture: 'hero_warrior',
-        hp: (stage) => 120 + Math.floor(15 + 3 * Math.floor(stage / 5) * stage),
-        atk: (stage) => 15 + Math.floor(1 + 0.2 * Math.floor(stage/5) * stage),
-        def: (stage) => 50 + Math.floor(3 + 1 * Math.floor(stage/5) * stage),
+        hp: (stage) => 120 + Math.floor(30 * stage),
+        atk: (stage) => 15 + Math.floor(1 * stage),
+        def: (stage) => 50 + Math.floor(3 * stage),
         range: 60, speed: 80, as: 1200,
         class: 'warrior',
         scale: 0.1
@@ -523,9 +592,9 @@ const UNIT_TEMPLATES = {
     ARCHER: {
         texture: 'hero_archer',
         hp: (stage) => 70 + 2 * stage,
-        atk: (stage) => 10 + 5 * stage,
+        atk: (stage) => 15 + 3 * stage,
         def: (stage) => 25 + 0.5 * stage, 
-        range: 450, speed: 60, as: 1000,
+        range: 450, speed: 60, as: 800,
         class: 'archer', projSpeed: 400,
         scale: 0.16
     },
@@ -571,28 +640,37 @@ function arrangeHeroesByClass(scene) {
 
         let targetY = 300; // 기본값은 화면 중앙
 
-        // [핵심] 제로 디비전 방지 및 기획하신 공식 대입
-        if (n > 1) {
-            //홀수일 경우
-            if (n%2 != 0) {
-                // 전달해주신 공식: y = 400/(n-1) * (x - (n-1)/2) + 300
-                // 가독성과 연산 안정성을 위해 쪼개서 대입합니다.
-                const spacing = 300 / (n - 1); 
-                const midIndex = (n - 1) / 2;
+        if (hClass == 'warrior') {
+            if (n > 1) {
+                if (n%2 != 0) {
+                    const spacing = 200 / (n - 1); 
+                    const midIndex = (n - 1) / 2;
+                    targetY = spacing * (x - midIndex) + 275;
+                }
+                else {
+                    const spacing = 200 / (n); 
+                    const midIndex = (n-1) / 2;
             
-                // 화면 밖으로 너무 벗어나는 것을 막기 위해 spacing의 최대폭을 제한(예: 최대 간격 80px)하고 싶다면 
-                // Math.min(400 / (n - 1), 80) 형태를 취하셔도 좋습니다.
-                targetY = spacing * (x - midIndex) + 250;
+                    targetY = spacing * (x - midIndex) + 275;
+                }
             }
-            //짝수일 경우
-            else {
-                const spacing = 300 / (n); 
-                const midIndex = (n-1) / 2;
-            
-                targetY = spacing * (x - midIndex) + 250;
-            }
-            
         }
+        else {
+            if (n > 1) {
+                if (n%2 != 0) {
+                    const spacing = 350 / (n - 1); 
+                    const midIndex = (n - 1) / 2;
+                    targetY = spacing * (x - midIndex) + 275;
+                }
+                else {
+                    const spacing = 400 / (n); 
+                    const midIndex = (n-1) / 2;
+            
+                    targetY = spacing * (x - midIndex) + 275;
+                }
+            }
+        }
+        
 
         // 트윈으로 부드럽게 정렬 이동
         scene.tweens.add({
@@ -653,17 +731,28 @@ function createUnit(scene, x, y, textureKey, group, stats) {
 
     unit.stats = stats;
     unit.lastAttackTime = 0;
-    //직접추가) 유닛 체력바 겹칩 문제 해결. 아군이면 더 위로 올림
-    let herodepth = 0
+
+
     if (group != enemies) {
-        herodepth = 1
+        unit.statText = scene.add.text(x, y - 50, 
+        `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
+        { fontSize: '15px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:4}}
+        ).setOrigin(0.5).setDepth(1);
+    } else if (stats.class == 'slime_giant') {
+        unit.statText = scene.add.text(x, y + 50, 
+        `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
+        { fontSize: '17px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:2} }
+        ).setOrigin(0.5).setDepth(0);
+    }
+    else {
+         // 직관적인 이모지 UI (⚔️ 공격, 🛡️ 방어, ❤️ 체력)
+        unit.statText = scene.add.text(x, y - 50, 
+        `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
+        { fontSize: '13px', fill: '#fff', backgroundColor: '#000', padding: {x:2, y:2} }
+        ).setOrigin(0.5).setDepth(0);
     }
     
-    // 직관적인 이모지 UI (⚔️ 공격, 🛡️ 방어, ❤️ 체력)
-    unit.statText = scene.add.text(x, y - 50, 
-        `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
-        { fontSize: '14px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:2} }
-    ).setOrigin(0.5).setDepth(herodepth);
+   
     
     return unit;
 }
@@ -685,6 +774,9 @@ function playAttackAnimation(scene, attacker, target) {
         attacker.setTexture(attack1Key);
     }
 
+    if (uClass == 'warrior') {
+        scene.sound.play('sfx_swing', { volume: 0.7 });
+    }
     // 2. 근접 유닛(전사/슬라임 등)은 대시 거리를 크게, 원거리는 살짝만 줌
     const direction = (target.x > attacker.x) ? 1 : -1;
     const dashDistance = (attacker.stats.range <= 60) ? 35 : 8;
@@ -741,6 +833,7 @@ function fireProjectile(scene, attacker, target) {
 
     // 1. 클래스별 투사체 이미지 및 속도 지정
     if (uClass === 'archer') {
+        scene.sound.play('sfx_archer_shoot', { volume: 0.5 });
         textureKey = 'arrow';       // 궁수는 화살
         speed = attacker.stats.projSpeed;    // 화살 속도 (빠름)
     } else if (uClass === 'mage') {
@@ -800,6 +893,7 @@ function onProjectileHit(scene, projectile, hitX, hitY) {
     if (attackerClass === 'mage') {
         // --- 마법사: 광역 피해 (AOE) 및 이펙트 ---
         createMageEffect(scene, hitX, hitY); // [신규] 이펙트 함수 호출
+        scene.sound.play('sfx_mage_hit', { volume: 0.4 });
 
         const radius = 100;
         enemies.children.iterate(enemy => {
@@ -958,8 +1052,8 @@ function checkUnitDeath(scene, target) {
             }
 
             // [기획 반영] 스테이지 증가에 따른 파편 드랍률 감쇠 공식
-            // 1스테이지: 100%, 20스테이지: 52.5%, 35스테이지 이후: 최저 15% 마지노선 고정
-            const dropRate = Math.max(1.0 - (currentStage * 0.025), 0.15);
+            // 10스테이지까지: 100%, 20스테이지: 75%, 46스테이지 이후: 최저 15% 마지노선 고정
+            const dropRate = Math.max(1.25 - (currentStage * 0.025), 0.15);
             const randomValue = Math.random(); // 0.0 ~ 1.0 사이의 무작위 실수
 
             // 주사위 굴리기 성공 시에만 파편 스폰
@@ -972,9 +1066,11 @@ function checkUnitDeath(scene, target) {
                     if (currentStage % 5 === 0) {
                     // 5, 10, 15... 스테이지라면 영입 화면을 띄움
                     triggerHeroRecruitment(scene);
+                    scene.sound.play('sfx_stage_clear', { volume: 1.8 });
                     } else {
                     // 일반 스테이지라면 보상 파편 선택
                     triggerStageClear(scene);
+                    scene.sound.play('sfx_stage_clear', { volume: 1.5 });
                     }
                     
                 }
@@ -1019,12 +1115,12 @@ function spawnShard(scene, x, y, forcedType = null, forcedValue = null, minMult 
     let finalValue = forcedValue;
     let textColor = forcedColor;
 
-    // 입력 받은 값이 없을 때(필드 드랍)
+    // (필드 드랍): 기본 값 높게, 스테이지 계수 낮게.
     if (finalValue === null) {
         let baseValue = 0;
-        if (finalType === 'ATK') baseValue = 3 + Math.floor(currentStage / 3);
-        else if (finalType === 'DEF') baseValue = 6 + Math.floor(currentStage * 1);
-        else if (finalType === 'HP') baseValue = 20 + (currentStage * 5);
+        if (finalType === 'ATK') baseValue = 5 + Math.floor(currentStage * 0.4);
+        else if (finalType === 'DEF') baseValue = 4 + Math.floor(currentStage * 0.3);
+        else if (finalType === 'HP') baseValue = 40 + (currentStage * 6);
 
      // 2. 랜덤 배율 적용
     const mult = Math.random() * (maxMult - minMult) + minMult;
@@ -1120,7 +1216,7 @@ function handleDrop(scene, shard) {
     });
 
     if (closestHero) {
-        applyStat(closestHero, shard.shardType, shard.shardValue);
+        applyStat(scene, closestHero, shard.shardType, shard.shardValue);
         safeDestroyShard(shard);
         
         // [튜토리얼 4단계 성공 검증 적용]
@@ -1155,10 +1251,19 @@ function safeDestroyShard(shard) {
     }
 }
 
-function applyStat(unit, type, value) {//변수 항목에 value 추가.
-    if (type === 'ATK') unit.stats.atk += value;
-    else if (type === 'DEF') unit.stats.def += value;
-    else if (type === 'HP') unit.stats.hp += value; // 현재 체력 즉시 회복 로직 포함
+function applyStat(scene, unit, type, value) {//변수 항목에 value 추가.
+    if (type === 'ATK') {
+        unit.stats.atk += value;
+        scene.sound.play('sfx_upgrade_atk', { volume: 0.45 });
+    }
+    else if (type === 'DEF') {
+        unit.stats.def += value;
+        scene.sound.play('sfx_upgrade_def', { volume: 0.30 });
+    }
+    else if (type === 'HP') {
+        unit.stats.hp += value;
+        scene.sound.play('sfx_upgrade_hp', { volume: 1.5 });
+    }
     
     updateStatUI(unit);
     // 효과음이나 파티클을 넣으면 좋습니다.
@@ -1257,7 +1362,14 @@ function processUnitGroup(scene, myGroup, targetGroup, time) {
             unit.body.setVelocity(0); // 적이 없으면 정지
         }
 
-        if (unit.statText) unit.statText.setPosition(unit.x, unit.y - 50);
+        if (unit.statText)  {
+            if (unit.stats.class == 'slime_giant') {
+                unit.statText.setPosition(unit.x, unit.y - 150);
+            }
+            else {
+                unit.statText.setPosition(unit.x, unit.y - 50);
+            }
+        }
     });
 }
 
@@ -1285,8 +1397,8 @@ function triggerStageClear(scene) {
 
     // 반투명 배경(오버레이)
     const overlay = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setDepth(10).setInteractive();//클릭 못하도록 막음
-    const title = scene.add.text(400, 150, `STAGE ${currentStage} CLEAR!`, { fontSize: '40px', fill: '#fff' }).setOrigin(0.5).setDepth(11);
-    const subTitle = scene.add.text(400, 200, "보상을 선택하세요", { fontSize: '20px', fill: '#ddd' }).setOrigin(0.5).setDepth(11);
+    const title = scene.add.text(400, 150, `STAGE ${currentStage} CLEAR!`, { fontSize: '40px', fill: '#fff', padding: { top: 10, bottom: 10 }, stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(11);
+    const subTitle = scene.add.text(400, 200, "보상을 선택하세요", { fontSize: '20px', fill: '#ddd', padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(11);
 
     const rewardOptions = [];
     const types = ['ATK', 'DEF', 'HP'];
@@ -1295,9 +1407,9 @@ function triggerStageClear(scene) {
         const xPos = 200 + (i * 200);
         
         // 1. 기본 수치 계산
-        let baseValue = (type === 'ATK') ? 4 + Math.floor(currentStage / 2) : 
-                        (type === 'DEF') ? 7 + Math.floor(currentStage * 1.5) : 
-                        30 + (currentStage * 7);
+        let baseValue = (type === 'ATK') ? 7 + Math.floor(currentStage * 0.9) : 
+                        (type === 'DEF') ? 6 + Math.floor(currentStage * 0.6) : 
+                        50 + (currentStage * 10);
         // 2. 랜덤계수 (1.3~2.0)
         const mult = Math.random() * (2.0 - 1.3) + 1.3;
         const finalValue = Math.max(Math.floor(baseValue * mult), 1);
@@ -1361,7 +1473,7 @@ function triggerHeroRecruitment(scene) {
     // 뒷배경 어둡게 (블커)
     const blocker = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setDepth(20);
     const title = scene.add.text(400, 100, "새로운 아군 영입", {
-        fontSize: '32px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 }
+        fontSize: '32px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 }, stroke: '#000', strokeThickness:6
     }).setOrigin(0.5).setDepth(21);
 
     const classes = ['WARRIOR', 'ARCHER', 'MAGE'];
@@ -1462,13 +1574,13 @@ function createHeroRecruitCard(scene, x, y, unitClass) {
         }
 
     const titleTxt = scene.add.text(0, -80, `${unitClass} (★${Math.floor(unitValue)})`, {
-        fontSize: '18px', fill: cardColor, fontStyle: 'bold'
+        fontSize: '18px', fill: cardColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4
     }).setOrigin(0.5).setDepth(2);
 
     // 개별 텍스트로 쪼개서 생성 (Y 좌표를 20px 간격으로 아래로 나열)
-    const hpTxt = scene.add.text(0, 120, `HP: ${finalStats.hp}`, { fontSize: '18px', fill: hpColor, fontStyle: 'bold' }).setOrigin(0.5).setDepth(2);
-    const atkTxt = scene.add.text(0, 140, `ATK: ${finalStats.atk}`, { fontSize: '18px', fill: atkColor, fontStyle: 'bold' }).setOrigin(0.5).setDepth(2);
-    const defTxt = scene.add.text(0, 160, `DEF: ${finalStats.def}`, { fontSize: '18px', fill: defColor, fontStyle: 'bold' }).setOrigin(0.5).setDepth(2);
+    const hpTxt = scene.add.text(0, 120, `HP: ${finalStats.hp}`, { fontSize: '18px', fill: hpColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
+    const atkTxt = scene.add.text(0, 140, `ATK: ${finalStats.atk}`, { fontSize: '18px', fill: atkColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
+    const defTxt = scene.add.text(0, 160, `DEF: ${finalStats.def}`, { fontSize: '18px', fill: defColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
 
     const container = scene.add.container(x, y, [img, titleTxt, hpTxt, atkTxt, defTxt]);
     container.setSize(120, 180).setDepth(2);
@@ -1503,23 +1615,23 @@ function startNextStage(scene) {
     spawnEnemies(scene, currentStage);
 }
 
-//적 생성 함수 
 function spawnEnemies(scene, currentStage) {
     const enemyCount = 1 + Math.floor(currentStage / 3);
     const enemyColumn = Math.floor(enemyCount/5);
-    //const hp_coefficient = Math.floor(5 + 3 * Math.floor(currentStage / 15));
-    //const atk_coefficient = Math.floor(1 + 1 * Math.floor(currentStage/15));
-    //const def_coefficient = Math.floor(2 + 1 * Math.floor(currentStage/10));
     const hp_coefficient = 5;
     const atk_coefficient = 1;
     const def_coefficient = 2;
+    let enemyLevel = 1;
+    if (currentStage >= 50) {
+        enemyLevel = 1 + Math.floor((currentStage - 50) / 5);
+    }
 
     for (let i = 0; i< enemyColumn; i++) {
         for (let j = 0; j<5; j++) {
             createUnit(scene, 600+i*30, 50 + (j * 100), 'enemy', enemies, {
-            hp: 40 + Math.floor(currentStage * (hp_coefficient + 5)),
-            atk: 5 + Math.floor(currentStage * (atk_coefficient + 1)),
-            def: 20 + Math.floor(currentStage * (def_coefficient + 1)),
+            hp: 40 + Math.floor(currentStage * hp_coefficient),
+            atk: 5 + Math.floor(currentStage * atk_coefficient),
+            def: 20 + Math.floor(currentStage * def_coefficient),
             range: 50, speed: 60, as: 1500, class: 'slime',
             scale: 0.2
         });
@@ -1535,9 +1647,9 @@ function spawnEnemies(scene, currentStage) {
             array = -Math.floor(i/2)
         }
         createUnit(scene, 600 + 30*enemyColumn, 250 + 100*array, 'enemy', enemies, {
-            hp: 40 + Math.floor(currentStage * (hp_coefficient + 5)),
-            atk: 5 + Math.floor(currentStage * (atk_coefficient + 1)),
-            def: 20 + Math.floor(currentStage * (def_coefficient + 1)),
+            hp: 40 + Math.floor(currentStage * hp_coefficient),
+            atk: 5 + Math.floor(currentStage * atk_coefficient),
+            def: 20 + Math.floor(currentStage * def_coefficient),
             range: 50, speed: 60, as: 1500, class: 'slime',
             scale: 0.2
             });
@@ -1545,11 +1657,11 @@ function spawnEnemies(scene, currentStage) {
     }
     //극후반부에 등장하는 거대 슬라임 인간
     else if (currentStage >= 50 && (currentStage%10 == 0)) {
-        createUnit(scene, 1000, 250, 'enemy', enemies, {
-            hp: 2000 + Math.floor(currentStage * (hp_coefficient + 15) * enemyColumn),
-            atk: 500 + Math.floor(currentStage * (atk_coefficient + 8) * enemyColumn),
-            def: 200 + Math.floor(currentStage * (def_coefficient + 1) * enemyColumn),
-            range: 150, speed: 25, as: 2000, class: 'slime_human',
+        createUnit(scene, 900, 250, 'enemy', enemies, {
+            hp: 2000 + Math.floor(currentStage * (hp_coefficient + 15) * enemyLevel),
+            atk: 500 + Math.floor(currentStage * (atk_coefficient + 24) * enemyLevel),
+            def: 200 + Math.floor(currentStage * enemyLevel),
+            range: 150, speed: 25, as: 5000, class: 'slime_giant',
             scale: 0.7
         });
     }
@@ -1564,10 +1676,10 @@ function spawnEnemies(scene, currentStage) {
             array = -Math.floor(i/2)
         }
         createUnit(scene, 600 + 45*enemyColumn, 200 + 120*array, 'enemy', enemies, {
-            hp: 100 + Math.floor(currentStage * (hp_coefficient + 5 * enemyColumn)),
-            atk: 20 + Math.floor(currentStage * (atk_coefficient + 2 * enemyColumn)),
-            def: 40 + Math.floor(currentStage * (def_coefficient + 1 * enemyColumn)),
-            range: 80, speed: 40, as: 1100, class: 'slime_human',
+            hp: 500 + Math.floor(currentStage * (hp_coefficient + 5 * enemyLevel)),
+            atk: 80 + Math.floor(currentStage * (atk_coefficient + 2 * enemyLevel)),
+            def: 30 + Math.floor(currentStage * (def_coefficient + 1 * enemyLevel)),
+            range: 80, speed: 40 + 2 * enemyLevel, as: Math.max(200, 1200 - 50 * enemyLevel), class: 'slime_human',
             scale: 0.25
             });
         }
@@ -1578,22 +1690,36 @@ function updateStageBackground(scene) {
     if (!currentBgImage) return;
 
     let targetTexture = 'bg_field'; // 기본값 설정
+    let targetBgm = 'bgm_field';
 
     // 💡 스테이지 조건에 따른 배경 텍스처 판정
     if (currentStage === 0) {
         targetTexture = 'bg_tutorial'; // 튜토리얼 (성벽 내부)
+        targetBgm = 'bgm_field';
     } else if (currentStage >= 1 && currentStage < 30) {
         targetTexture = 'bg_field';    // 스테이지 1~29 (요새 평원)
+        targetBgm = 'bgm_field';
     } else if (currentStage >= 30 && currentStage < 50) {
         targetTexture = 'bg_night';    // 스테이지 30~49 (밤의 평원)
+        targetBgm = 'bgm_night';
     } else if (currentStage >= 50) {
         targetTexture = 'bg_slime';    // 스테이지 50 이상 (슬라임 본거지)
+        targetBgm = 'bgm_slime';
     }
     // 🚨 최적화: 이미 해당 배경이 출력 중이라면 텍스처 교체 연산을 패스합니다.
-    if (currentBgImage.texture.key === targetTexture) return;
+    if (currentBgImage.texture.key !== targetTexture) {
+        currentBgImage.setTexture(targetTexture);
+    }
 
-    // 새로운 배경으로 부드럽게 스위칭!
-    currentBgImage.setTexture(targetTexture);
+    if (!currentBgm || currentBgm.key !== targetBgm) {
+        if (currentBgm) {
+            currentBgm.stop(); // 기존 BGM 정지
+        }
+        // 새 BGM 선언 및 재생 (루프 권장, 볼륨 0.4)
+        currentBgm = scene.sound.add(targetBgm, { loop: true, volume: 0.4 });
+        currentBgm.play();
+    }
+    
 }
 
 // [4. 게임 오버 판정]
@@ -1601,9 +1727,11 @@ function triggerGameOver(scene) {
     isGameOver = true;
     clearAllProjectiles(); // 다음 단계로 가기 전 청소
     scene.physics.pause();
+    if (currentBgm) currentBgm.stop(); // 흐르던 BGM을 엄숙하게 정지
+    scene.sound.play('sfx_game_over', { volume: 0.7 });
     scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.8).setDepth(20);
-    scene.add.text(400, 300, 'HERO DIED...', { fontSize: '64px', fill: '#ff0000' }).setOrigin(0.5).setDepth(21);
-    scene.add.text(400, 400, 'Click to Restart', { fontSize: '20px' }).setOrigin(0.5).setDepth(21);
+    scene.add.text(400, 300, 'GAME OVER', { fontSize: '64px', fill: '#ff0000',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(21);
+    scene.add.text(400, 400, 'Click to Restart', { fontSize: '20px',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(21);
     
     scene.input.once('pointerdown', () => {
         window.location.reload(); // 간단한 재시작 로직
