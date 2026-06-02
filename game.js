@@ -2,6 +2,14 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
+    scale: {
+        // FIT 모드는 800x600 비율을 유지하면서 모바일 화면(가로)에 꽉 차게 늘려줍니다.
+        // 유닛이나 UI 좌표가 절대 깨지지 않습니다.
+        mode: Phaser.Scale.FIT,           
+        autoCenter: Phaser.Scale.CENTER_BOTH, // 화면 정중앙에 배치 (남는 공간은 레터박스 처리)
+        
+        orientation: Phaser.Scale.Orientation.LANDSCAPE // 가로 모드 지향
+    },
     physics: {
         default: 'arcade',
         arcade: { debug: false } // 충돌 영역을 보고 싶다면 true로 변경
