@@ -8,7 +8,7 @@ const config = {
         mode: Phaser.Scale.FIT,           
         autoCenter: Phaser.Scale.CENTER_BOTH, // 화면 정중앙에 배치 (남는 공간은 레터박스 처리)
         
-        orientation: Phaser.Scale.Orientation.LANDSCAPE // 가로 모드 지향
+        orientation: Phaser.Scale.Orientation.PORTRAIT// 세로 모드 지향
     },
     physics: {
         default: 'arcade',

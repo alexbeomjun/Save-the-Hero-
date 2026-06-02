@@ -13,24 +13,28 @@
             padding: 0;
             width: 100%;
             height: 100%;
+            position: fixed;
             overflow: hidden;         /* 화면 밖으로 스크롤(바운스)되는 현상 절대 차단 */
             background-color: #000000; /* 4:3 비율 외에 남는 스마트폰 여백을 깔끔한 검은색으로 처리 */
             overscroll-behavior: none; /* 모바일에서 당겨서 새로고침되는 제스처 차단 */
+            overscroll-behavior: none; /* iOS 15+ 스크롤 바운스 방지 */
+            -webkit-overflow-scrolling: auto;
         }
 
         /* 게임이 들어가는 컨테이너 크기 고정 */
         #game-container {
             width: 100%;
             height: 100%;
+            position: relative;
         }
 
         /* Phaser가 생성하는 실제 게임 화면(Canvas)을 강제로 화면 정중앙에 위치시킵니다 */
         canvas {
             display: block;
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
             
             /* 스마트폰을 세로로 돌려도 800x600 화면이 찌그러지거나 브라우저 밖으로 터지지 않게 제어 */
             max-width: 100%;
