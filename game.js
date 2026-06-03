@@ -1,21 +1,19 @@
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    // 💡 HTML의 컨테이너 요소를 지정하여 이 내부에서 정렬되도록 묶어줍니다.
-    parent: 'game-container', 
+    width: 1920,   // 가상 고해상도 유지
+    height: 1200,  // 가상 고해상도 유지
     
+    // ★ 중요: HTML의 game-container와 연결하고 자동 축소 설정을 켭니다.
+    parent: 'game-container',
     scale: {
-        mode: Phaser.Scale.FIT,           // 800x600 비율을 유지하며 꽉 채움
-        autoCenter: Phaser.Scale.CENTER_BOTH, // Phaser 엔진 자체적으로 정중앙 정렬 수행
-        
-        // 🚨 800x600은 가로 화면이 기본이므로 LANDSCAPE(가로 모드 지향)로 설정해야 
-        // 모바일 브라우저가 가로/세로 회전 시 레이아웃을 정상적으로 판정합니다.
-        orientation: Phaser.Scale.Orientation.LANDSCAPE
+        mode: Phaser.Scale.FIT,           // 브라우저 창 크기에 맞게 게임 크기를 줄여줍니다.
+        autoCenter: Phaser.Scale.CENTER_BOTH, // 브라우저 한가운데에 정렬합니다.
+        orientation: Phaser.Scale.Orientation.LANDSCAPE 
     },
+    
     physics: {
         default: 'arcade',
-        arcade: { debug: false }
+        arcade: { debug: false } 
     },
     scene: { preload: preload, create: create, update: update }
 };
@@ -29,10 +27,10 @@ function showTitleScreen(scene) {
     let bgIndex = 0;
 
     // baseBg는 밑바탕에 고정되어 있고, fadeBg가 그 위에서 페이드 인 되며 교체하는 정석 방식입니다.
-    let baseBg = scene.add.image(400, 300, titleBgs[bgIndex]).setDepth(100).setTint(0x999999);
-    baseBg.setScale(0.4);
-    let fadeBg = scene.add.image(400, 300, titleBgs[bgIndex]).setDepth(101).setAlpha(0).setTint(0x999999);
-    fadeBg.setScale(0.4);
+    let baseBg = scene.add.image(960, 670, titleBgs[bgIndex]).setDepth(100).setTint(0x999999);
+    baseBg.setScale(0.96);
+    let fadeBg = scene.add.image(960, 670, titleBgs[bgIndex]).setDepth(101).setAlpha(0).setTint(0x999999);
+    fadeBg.setScale(0.96);
 
     const bgTimer = scene.time.addEvent({
         delay: 4000, 
@@ -74,16 +72,16 @@ function showTitleScreen(scene) {
     };
     
     // 2. 타이틀 텍스트
-    const titleText = scene.add.text(400, 200, "Save the Hero!", {
-        fontSize: '42px', fill: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 }
+    const titleText = scene.add.text(960, 400, "Save the Hero!", {
+        fontSize: '84px', fill: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 }
     }).setOrigin(0.5).setDepth(102);
 
     // 3. 게임 시작 버튼 (컨테이너 구조)
-    const btnBg = scene.add.rectangle(0, 0, 200, 60).setFillStyle(0x4a4a4a); 
-    const btnTxt = scene.add.text(0, 0, "게임 시작", { fontSize: '24px', fill: '#ffffff',  fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
+    const btnBg = scene.add.rectangle(0, 0, 400, 120).setFillStyle(0x4a4a4a); 
+    const btnTxt = scene.add.text(0, 0, "게임 시작", { fontSize: '48px', fill: '#ffffff',  fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
     
-    const startBtn = scene.add.container(400, 400, [btnBg, btnTxt]);
-    startBtn.setSize(200, 60).setInteractive().setDepth(102);
+    const startBtn = scene.add.container(960, 800, [btnBg, btnTxt]);
+    startBtn.setSize(400, 120).setInteractive().setDepth(102);
 
     // 버튼 호버 연출
     startBtn.on('pointerover', () => btnBg.setFillStyle(0x6a6a6a));
@@ -101,11 +99,11 @@ function showTitleScreen(scene) {
     });
 
     // 4. 튜토리얼 버튼 (컨테이너 구조)
-    const tutorialbtnBg = scene.add.rectangle(0, 0, 200, 60).setFillStyle(0x4a4a4a); // 원래 코드의 오류 수정
-    const tutorialbtnTxt = scene.add.text(0, 0, "튜토리얼 시작", { fontSize: '24px', fill: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
+    const tutorialbtnBg = scene.add.rectangle(0, 0, 400, 120).setFillStyle(0x4a4a4a); // 원래 코드의 오류 수정
+    const tutorialbtnTxt = scene.add.text(0, 0, "튜토리얼 시작", { fontSize: '48px', fill: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5);
     
-    const tutorialBtn = scene.add.container(400, 320, [tutorialbtnBg, tutorialbtnTxt]);
-    tutorialBtn.setSize(200, 60).setInteractive().setDepth(102);
+    const tutorialBtn = scene.add.container(960, 640, [tutorialbtnBg, tutorialbtnTxt]);
+    tutorialBtn.setSize(400, 120).setInteractive().setDepth(102);
 
     tutorialBtn.on('pointerover', () => tutorialbtnBg.setFillStyle(0x6a6a6a));
     tutorialBtn.on('pointerout', () => tutorialbtnBg.setFillStyle(0x4a4a4a));
@@ -126,7 +124,7 @@ const game = new Phaser.Game(config);
 let heroes, enemies; // 그룹 관리
 let shards; // 파편 그룹
 let inventory = []; // 인벤토리 배열 (최대 5칸 가정)
-const INVEN_Y = 550; // 인벤토리 Y 좌표
+const INVEN_Y = 1100; // 인벤토리 Y 좌표
 let currentStage = 0;
 let isGameOver = false;
 let isChoosingReward = false;
@@ -136,6 +134,8 @@ let projectiles; // 투사체 그룹 추가
 let isGameStarted = false; // 게임 시작 여부 플래그
 let currentBgImage;
 let currentBgm = null;
+let upscale = 2.5; // 기존 800*600 화면에서 1920*1200 화면으로 바꾸기 위한 상수
+let selectedShard = null; // 터치 터치 방식용 전역 변수
 
 //튜토리얼 구현
 let tutorialStep = 0;          // 현재 튜토리얼 단계를 기록 (0이면 일반 게임)
@@ -171,21 +171,21 @@ function startFirstStage(scene) {
         class: warriorTemplate.class,
         scale: warriorTemplate.scale
     };
-    createUnit(scene, -400, 300, 'hero_warrior', heroes, initialWarriorStats);
+    createUnit(scene, -400, 600, 'hero_warrior', heroes, initialWarriorStats);
 
     // 3. 시작 영입 창 오픈 연출 (화면을 살짝 어둡게 깔고 카드를 띄웁니다)
     // 기존에 구현되어 있을 스테이지 클리어 암전창(블커) 예시
-    const startMenuBg = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.6).setDepth(90);
-    const subTitle = scene.add.text(400, 120, "시작 유닛을 선택하세요", { fontSize: '30px', fill: '#ddd', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5).setDepth(91);
+    const startMenuBg = scene.add.rectangle(960, 600, 1920, 1200, 0x000000, 0.6).setDepth(90);
+    const subTitle = scene.add.text(960, 240, "시작 유닛을 선택하세요", { fontSize: '60px', fill: '#ddd', stroke: '#000000', strokeThickness: 6, padding: { top: 10, bottom: 10 } }).setOrigin(0.5).setDepth(91);
     // 4. [기획 반영] 완전 랜덤으로 3개의 클래스 선정
     const randClass1 = CLASS_LIST[Math.floor(Math.random() * CLASS_LIST.length)];
     const randClass2 = CLASS_LIST[Math.floor(Math.random() * CLASS_LIST.length)];
     const randClass3 = CLASS_LIST[Math.floor(Math.random() * CLASS_LIST.length)];
 
     // 5. 무작위 가챠 스탯 카드로 3장 생성 (currentStage가 0이므로 1레벨 기본 베이스에 0.8~1.5배 배율 적용)
-    const card1 = createHeroRecruitCard(scene, 240, 240, randClass1).setDepth(95);
-    const card2 = createHeroRecruitCard(scene, 400, 240, randClass2).setDepth(95);
-    const card3 = createHeroRecruitCard(scene, 560, 240, randClass3).setDepth(95);
+    const card1 = createHeroRecruitCard(scene, 576, 480, randClass1).setDepth(95);
+    const card2 = createHeroRecruitCard(scene, 960, 480, randClass2).setDepth(95);
+    const card3 = createHeroRecruitCard(scene, 1344, 480, randClass3).setDepth(95);
 
     const firstCards = [card1, card2, card3];
 
@@ -194,7 +194,9 @@ function startFirstStage(scene) {
         card.on('pointerdown', () => {
             // 선택한 영웅 필드에 추가 (-400)
             const textureName = UNIT_TEMPLATES[card.unitClass].texture;
-            createUnit(scene, -400, 300, textureName, heroes, card.finalStats);
+            createSelectEffect(scene, card.x, card.y);
+            createUnit(scene, -400, 600, textureName, heroes, card.finalStats);
+            
 
             // 생성했던 카드들과 암전 배경 제거
             firstCards.forEach(c => c.destroy());
@@ -214,22 +216,22 @@ function createTutorialUI(scene) {
     if (tutorialBox) return;
 
     // [수정] Y 좌표를 520에서 420으로 올려, 하단 인벤토리 영역(Y: 500~600)을 완벽히 비워줍니다.
-    tutorialBox = scene.add.rectangle(400, 420, 760, 120, 0x000000, 0.8)
+    tutorialBox = scene.add.rectangle(960, 840, 1840, 240, 0x000000, 0.8)
         .setStrokeStyle(2, 0xffffff)
         .setDepth(200);
 
     // [수정] 박스가 올라갔으므로 텍스트 시작 Y 좌표도 480에서 380으로 변경합니다.
-    tutorialText = scene.add.text(60, 380, "", {
-        fontSize: '18px',
+    tutorialText = scene.add.text(120, 760, "", {
+        fontSize: '36px',
         fill: '#ffffff',
         fontStyle: 'bold',
-        wordWrap: { width: 680, useAdvancedWrap: true },
+        wordWrap: { width: 1680, useAdvancedWrap: true },
         padding: { top: 10, bottom: 10 }
     }).setDepth(201);
 
     // [수정] "클릭하여 계속" 프롬프트 Y 좌표도 555에서 455로 올립니다.
-    tutorialNextPrompt = scene.add.text(740, 445, "클릭하여 계속", {
-        fontSize: '14px', fill: '#aaaaaa',padding: { top: 5, bottom: 5 }
+    tutorialNextPrompt = scene.add.text(1800, 900, "클릭하여 계속", {
+        fontSize: '28px', fill: '#aaaaaa',padding: { top: 5, bottom: 5 }
     }).setOrigin(1, 0.5).setDepth(201).setVisible(false);
 }
 
@@ -289,12 +291,12 @@ function startTutorialStage(scene) {
     };
     
     // 아군 전사 생성 (-400에서 생성되어 arrangeHeroesByClass에 의해 정중앙 300px 라인으로 이동)
-    createUnit(scene, -400, 300, 'hero_warrior', heroes, initialStats);
+    createUnit(scene, -400, 600, 'hero_warrior', heroes, initialStats);
     arrangeHeroesByClass(scene);
 
     // 3. 적 슬라임 1명 배치 (오른쪽 전방에 대기)
-    createUnit(scene, 600, 300, 'enemy_slime', enemies, {
-        hp: 30, atk: 5, def: 10, range: 50, speed: 40, as: 1500, class: 'slime', scale:0.2
+    createUnit(scene, 1440, 600, 'enemy_slime', enemies, {
+        hp: 30, atk: 5, def: 10, range: 50* upscale, speed: 40* upscale, as: 1500, class: 'slime', scale:0.2 * upscale
     });
 
     // 4. 최초 설명 페이즈 동안은 유닛들이 움직이지 않게 물리 엔진을 일시 정지해 둡니다.
@@ -328,7 +330,7 @@ function handleTutorialClick(scene) {
         tutorialStep = 4;
         
         // 클릭 프롬프트를 끄고 유저가 드래그 미션을 완수할 때까지 기다립니다.
-        updateTutorialMessage("능력치 파편을 아군에게 넣으면 해당 수치만큼 아군의 능력치 (체력,공격력,방어력)를 상승시킵니다. \n인벤토리의 파편을 드래그하여 아군 전사(WARRIOR)에게 넣어 주세요.", false);
+        updateTutorialMessage("능력치 파편을 아군에게 넣으면 해당 수치만큼 아군의 능력치 (체력,공격력,방어력)를 상승시킵니다. \n인벤토리의 파편을 클릭한 다음, 아군 전사를 클릭하세요.", false);
         
         // 4단계는 화면 아무 데나 클릭해서 넘어가는 게 아니라, 
         // 우리가 기존에 구현했던 파편 드롭 성공 함수(handleDrop)가 완료 사인을 보내야 합니다.
@@ -346,16 +348,16 @@ function triggerTutorialRewardPhase(scene) {
 
     // 2. 고정 카드 3장 생성 (화면 중앙 부근에 나란히 배치)
     // 기존의 createHeroRecruitCard를 호출하되, 내부에서 튜토리얼용 고정 스탯을 적용하도록 만들 것입니다.
-    const cardW = createHeroRecruitCard(scene, 240, 200, 'WARRIOR');
-    const cardA = createHeroRecruitCard(scene, 400, 200, 'ARCHER');
-    const cardM = createHeroRecruitCard(scene, 560, 200, 'MAGE');
+    const cardW = createHeroRecruitCard(scene, 576, 400, 'WARRIOR');
+    const cardA = createHeroRecruitCard(scene, 960, 400, 'ARCHER');
+    const cardM = createHeroRecruitCard(scene, 1344, 400, 'MAGE');
 
     // 3. 카드들에 마우스를 올렸을 때(6단계: 유닛 설명)와 클릭했을 때(1스테이지 시작)의 이벤트를 바인딩합니다.
     setupTutorialCardEvents(scene, [cardW, cardA, cardM]);
 }
 
 function setupTutorialCardEvents(scene, cards) {
-    const TutorialBg = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.6).setDepth(1);
+    const TutorialBg = scene.add.rectangle(960, 600, 1920, 1200, 0x000000, 0.6).setDepth(1);
     cards.forEach(card => {
         // 클래스명 추출 ('WARRIOR', 'ARCHER', 'MAGE')
         const uClass = card.unitClass; 
@@ -381,7 +383,8 @@ function setupTutorialCardEvents(scene, cards) {
             // 1. 선택한 유닛 소환 정보 추출 및 필드 배치
             // 실제 유닛 생성 메커니즘 함수(예: createUnit 또는 spawnHero)를 호출하여 아군 그룹에 추가합니다.
             const textureName = UNIT_TEMPLATES[uClass].texture;
-            createUnit(scene, -400, 300, textureName, heroes, card.finalStats);
+            createSelectEffect(scene, card.x, card.y);
+            createUnit(scene, -400, 600, textureName, heroes, card.finalStats);
 
             // 2. 화면에 떠 있는 3장의 영입 카드 오브젝트들을 전부 파괴하여 정리
             cards.forEach(c => c.destroy());
@@ -430,7 +433,8 @@ function preload() {
     const progressBar = this.add.graphics();
     const progressBox = this.add.graphics();
     progressBox.fillStyle(0x222222, 0.8);
-    progressBox.fillRect(240, 270, 320, 50); // 가로 320px, 세로 50px 사각형 트랙
+    progressBox.fillRect(540, 625, 800, 100); // 가로 320px, 세로 50px 사각형 트랙
+//progressBox.fillRect(760, 575, 400, 50);
 
     // 2. "로딩 중..." 안내 텍스트 배치
     const width = this.cameras.main.width;
@@ -439,15 +443,15 @@ function preload() {
         x: width / 2,
         y: height / 2 - 50,
         text: '로딩 중...',
-        style: { font: '20px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
+        style: { font: '40px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
     }).setOrigin(0.5);
 
     // 3. 퍼센트 표시 텍스트 (0%)
     const percentText = this.make.text({
         x: width / 2,
-        y: height / 2 - 5,
+        y: height / 2 + 65,
         text: '0%',
-        style: { font: '18px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
+        style: { font: '40px sans-serif', fill: '#ffffff', stroke: '#000000', strokeThickness: 6 }
     }).setOrigin(0.5);
 
 
@@ -462,7 +466,8 @@ function preload() {
         // 에셋 진행도 비율에 맞춰 내부 안쪽 바를 실시간으로 채워줍니다.
         progressBar.clear();
         progressBar.fillStyle(0xffffff, 1);
-        progressBar.fillRect(250, 280, 300 * value, 30);
+        progressBar.fillRect(540, 625, 800 * value, 100);
+        //progressBar.fillRect(770, 585, 380 * value, 30);
     });
 
     // 💡 모든 에셋(이미지, 오디오 등)의 로드가 완벽히 끝났을 때 실행되는 이벤트
@@ -557,30 +562,99 @@ function create() {
     // [시작 화면 오버레이 트리거]
     showTitleScreen(this);
 
-    currentBgImage = this.add.image(400, 300, 'bg_tutorial');
-    currentBgImage.setScale(0.4);
+    currentBgImage = this.add.image(960, 600, 'bg_tutorial');
+    currentBgImage.setScale(0.96);
     currentBgImage.setDepth(-10);
 
     // 하단 인벤토리 영역 배경
-    this.add.rectangle(400, INVEN_Y, 800, 100, 0x333333).setDepth(-1);
+    this.add.rectangle(960, INVEN_Y, 1920, 200, 0x333333).setDepth(-1);
 
     // 스테이지 UI 생성
-    stageText = this.add.text(20, 20, `STAGE: ${currentStage}`, {
-    fontSize: '24px',
+    stageText = this.add.text(40, 40, `STAGE: ${currentStage}`, {
+    fontSize: '48px',
     fill: '#ffffff',
     fontStyle: 'bold',
     stroke: '#000000',
     strokeThickness: 3
 }).setDepth(99); // UI는 항상 최상단
 
-    // 드래그 이벤트 설정
-    this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-        gameObject.x = dragX;
-        gameObject.y = dragY;
+this.input.on('pointerdown', (pointer) => {
+        // 유저가 화면 어디를 누르든 최상위(Depth: 2000)에서 터치 링 이펙트 생성!
+        createTouchEffect(this, pointer.x, pointer.y);
     });
 
-    this.input.on('dragend', (pointer, gameObject) => {
-        handleDrop(this, gameObject);
+currentBgImage.setInteractive();
+currentBgImage.on('pointerdown', (pointer) => {
+    // 💡 핵심: 파편이 선택되어 있는 상태에서 전장을 클릭/터치했을 때만 발동
+    if (selectedShard && selectedShard.active && !isChoosingReward) {
+        // 1920x1200 해상도 기준 인벤토리 시작선이 대략 Y: 960 지점이므로 그 위쪽만 전장으로 판정
+        const invenTopLine = 1000; 
+        
+        if (pointer.y < invenTopLine) {
+            // 클릭한 정확한 마우스/터치 좌표(pointer.x, pointer.y)를 들고 알고리즘으로 진입!
+            handleTouchDrop(this, selectedShard, pointer.x, pointer.y);
+        } else {
+            // 인벤토리 바 안의 빈 곳을 누르면 그냥 선택 취소 처리
+
+            selectedShard.setScale(1.0);
+            selectedShard = null;
+        }
+    }
+});
+}
+
+// 💡 플레이어가 화면을 터치했을 때 사방으로 퍼지는 원형 파동 이펙트
+function createTouchEffect(scene, x, y) {
+    // 1. 빈 그래픽 오브젝트 생성
+    const fx = scene.add.graphics();
+    fx.setDepth(2000); // 전장 및 UI보다 무조건 위에 보이도록 깊이 설정
+
+    // 2. 트윈 제어용 임시 상태 객체
+    const fxState = { radius: 5, alpha: 0.8 };
+
+    // 3. 실시간으로 원을 그려주는 트윈 연동
+    scene.tweens.add({
+        targets: fxState,
+        radius: 40 * (upscale || 1), // 1920 해상도에 맞춰 이펙트 크기 유동적 확장
+        alpha: 0,
+        duration: 350,                // 0.35초 동안 빠르게 퍼짐
+        ease: 'Cubic.out',
+        onUpdate: () => {
+            fx.clear();
+            // 선 스타일 (두께 3px, 흰색 혹은 연한 하늘색 0x00ffff)
+            fx.lineStyle(3 * (upscale || 1), 0xffffff, fxState.alpha);
+            fx.strokeCircle(x, y, fxState.radius);
+        },
+        onComplete: () => {
+            fx.destroy(); // 애니메이션이 끝나면 메모리에서 깔끔하게 제거
+        }
+    });
+}
+// 카드 선택시 이펙트
+function createSelectEffect(scene, x, y) {
+    // 1. 빈 그래픽 오브젝트 생성
+    const fx = scene.add.graphics();
+    fx.setDepth(2000); // 전장 및 UI보다 무조건 위에 보이도록 깊이 설정
+
+    // 2. 트윈 제어용 임시 상태 객체
+    const fxState = { radius: 10, alpha: 0.8 };
+
+    // 3. 실시간으로 원을 그려주는 트윈 연동
+    scene.tweens.add({
+        targets: fxState,
+        radius: 80 * upscale, // 1920 해상도에 맞춰 이펙트 크기 유동적 확장
+        alpha: 0.05,
+        duration: 400,                // 0.35초 동안 빠르게 퍼짐
+        ease: 'Cubic.out',
+        onUpdate: () => {
+            fx.clear();
+            // 선 스타일 (두께 3px, 흰색 혹은 연한 하늘색 0x00ffff)
+            fx.lineStyle(5 * (upscale || 1), 0x00ffff, fxState.alpha);
+            fx.strokeCircle(x, y, fxState.radius);
+        },
+        onComplete: () => {
+            fx.destroy(); // 애니메이션이 끝나면 메모리에서 깔끔하게 제거
+        }
     });
 }
 
@@ -596,36 +670,36 @@ const UNIT_TEMPLATES = {
         hp: (stage) => 120 + Math.floor(30 * stage),
         atk: (stage) => 15 + Math.floor(1 * stage),
         def: (stage) => 50 + Math.floor(3 * stage),
-        range: 60, speed: 80, as: 1200,
+        range: 60 * upscale, speed: 80 * upscale, as: 1200,
         class: 'warrior',
-        scale: 0.1
+        scale: 0.1 * upscale
     },
     ARCHER: {
         texture: 'hero_archer',
         hp: (stage) => 70 + 2 * stage,
         atk: (stage) => 15 + 3 * stage,
         def: (stage) => 25 + 0.5 * stage, 
-        range: 450, speed: 60, as: 800,
-        class: 'archer', projSpeed: 400,
-        scale: 0.16
+        range: 450 * upscale, speed: 60 * upscale, as: 800,
+        class: 'archer', projSpeed: 400 * upscale,
+        scale: 0.16 * upscale
     },
     MAGE: {
         texture: 'hero_mage',
         hp: (stage) => 50 + 1 * stage,
         atk: (stage) => 12 + 2 * stage,
         def: (stage) => 15 + 0.2 * stage,
-        range: 250, speed: 50, as: 2000,
-        class: 'mage', projSpeed: 200,
-        scale: 0.09
+        range: 250 * upscale, speed: 50 * upscale, as: 2000,
+        class: 'mage', projSpeed: 200 * upscale,
+        scale: 0.09 * upscale
     }
 };
 
 function arrangeHeroesByClass(scene) {
     // 각 열(Column)의 X 좌표 정의
     const X_ROW = {
-        warrior: 250, // 1열 (가장 앞)
-        mage: 150,    // 2열 (중간)
-        archer: 50    // 3열 (가장 뒤)
+        warrior: 500, // 1열 (가장 앞)
+        mage: 300,    // 2열 (중간)
+        archer: 100   // 3열 (가장 뒤)
     };
 
     // 1. 각 클래스별로 '살아있는 총 유닛 수(n)'를 먼저 계산합니다.
@@ -649,35 +723,35 @@ function arrangeHeroesByClass(scene) {
         const n = totalCounts[hClass];       // 이 클래스의 총 유닛 수
         const x = currentIndices[hClass];   // 현재 유닛의 인덱스 (0부터 시작)
 
-        let targetY = 300; // 기본값은 화면 중앙
+        let targetY = 600; // 기본값은 화면 중앙
 
         if (hClass == 'warrior') {
             if (n > 1) {
                 if (n%2 != 0) {
-                    const spacing = 200 / (n - 1); 
+                    const spacing = 400 / (n - 1); 
                     const midIndex = (n - 1) / 2;
-                    targetY = spacing * (x - midIndex) + 275;
+                    targetY = spacing * (x - midIndex) + 550;
                 }
                 else {
-                    const spacing = 200 / (n); 
+                    const spacing = 400 / (n); 
                     const midIndex = (n-1) / 2;
             
-                    targetY = spacing * (x - midIndex) + 275;
+                    targetY = spacing * (x - midIndex) + 550;
                 }
             }
         }
         else {
             if (n > 1) {
                 if (n%2 != 0) {
-                    const spacing = 350 / (n - 1); 
+                    const spacing = 700 / (n - 1); 
                     const midIndex = (n - 1) / 2;
-                    targetY = spacing * (x - midIndex) + 275;
+                    targetY = spacing * (x - midIndex) + 550;
                 }
                 else {
-                    const spacing = 400 / (n); 
+                    const spacing = 800 / (n); 
                     const midIndex = (n-1) / 2;
             
-                    targetY = spacing * (x - midIndex) + 275;
+                    targetY = spacing * (x - midIndex) + 550;
                 }
             }
         }
@@ -745,21 +819,24 @@ function createUnit(scene, x, y, textureKey, group, stats) {
 
 
     if (group != enemies) {
-        unit.statText = scene.add.text(x, y - 50, 
+        unit.statText = scene.add.text(x, y - 100, 
         `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
-        { fontSize: '15px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:4}}
+        { fontSize: '36px', fill: '#fff', backgroundColor: '#000', padding: {x:6, y:6},
+        fontStyle: 'bold',stroke: '#4f47ed', strokeThickness: 5 }
         ).setOrigin(0.5).setDepth(1);
     } else if (stats.class == 'slime_giant') {
-        unit.statText = scene.add.text(x, y + 50, 
+        unit.statText = scene.add.text(x, y + 100, 
         `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
-        { fontSize: '17px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:2} }
+        { fontSize: '50px', fill: '#fff', backgroundColor: '#000', padding: {x:6, y:4},
+        fontStyle: 'bold',stroke: '#5a0000', strokeThickness: 4 }
         ).setOrigin(0.5).setDepth(0);
     }
     else {
          // 직관적인 이모지 UI (⚔️ 공격, 🛡️ 방어, ❤️ 체력)
-        unit.statText = scene.add.text(x, y - 50, 
+        unit.statText = scene.add.text(x, y - 100, 
         `⚔️${stats.atk} 🛡️${stats.def} ❤️${stats.hp}`, 
-        { fontSize: '13px', fill: '#fff', backgroundColor: '#000', padding: {x:2, y:2} }
+        { fontSize: '32px', fill: '#fff', backgroundColor: '#000', padding: {x:4, y:4},
+        stroke: '#e95252', strokeThickness: 2 }
         ).setOrigin(0.5).setDepth(0);
     }
     
@@ -859,10 +936,10 @@ function fireProjectile(scene, attacker, target) {
     projectiles.add(proj);
 
     if (textureKey == 'arrow') {
-        proj.setScale(0.15);
+        proj.setScale(0.13 * upscale);
     }
     else if (textureKey == 'magic_orb') {
-        proj.setScale(0.18);
+        proj.setScale(0.15 * upscale);
     }
 
     proj.stats = { ...attacker.stats }; // 발사 시점 스탯 복사
@@ -906,7 +983,7 @@ function onProjectileHit(scene, projectile, hitX, hitY) {
         createMageEffect(scene, hitX, hitY); // [신규] 이펙트 함수 호출
         scene.sound.play('sfx_mage_hit', { volume: 0.4 });
 
-        const radius = 100;
+        const radius = 100 * upscale;
         enemies.children.iterate(enemy => {
             if (!enemy || !enemy.active || !enemy.stats) return;
             const dist = Phaser.Math.Distance.Between(hitX, hitY, enemy.x, enemy.y);
@@ -923,7 +1000,7 @@ function onProjectileHit(scene, projectile, hitX, hitY) {
     } else {
         // --- 궁수: 단일 타겟 판정 ---
         let closestEnemy = null;
-        let minDist = 40;
+        let minDist = 40 * upscale;
         enemies.children.iterate(enemy => {
             if (!enemy.active) return;
             let d = Phaser.Math.Distance.Between(projectile.x, projectile.y, enemy.x, enemy.y);
@@ -937,7 +1014,7 @@ function onProjectileHit(scene, projectile, hitX, hitY) {
 // [5. [신규] 마법사 광역 이펙트 (원형) 함수]
 function createMageEffect(scene, x, y) {
     // 1) 원형 그래픽 생성
-    const circle = scene.add.circle(x, y, 100, 0x00ffff, 0.4);
+    const circle = scene.add.circle(x, y, 250, 0x00ffff, 0.4);
     circle.setDepth(1); // 유닛 뒤 배경에 배치 (원하는 대로 조절)
 
     // 2) 트윈으로 몇 초 뒤 사라지게 연출
@@ -1017,7 +1094,7 @@ function playUnitDeathAnimation(scene, unit) {
     scene.tweens.add({
         targets: unit,
         alpha: 0.2,
-        y: unit.y + 15,
+        y: unit.y + 15 * upscale,
         duration: 800,
         onComplete: () => {
             unit.destroy();
@@ -1051,7 +1128,7 @@ function checkUnitDeath(scene, target) {
 
                 // 하단 알림창 문구 갱신 및 유저 클릭 대기
                 updateTutorialMessage(
-                    "적을 처치하면 강화 아이템인 '능력치 파편'을 확률적으로 획득할 수 있습니다.\n인벤토리에 있는 파편을 마우스로 드래그하여 아군 전사에게 주세요!", 
+                    "적을 처치하면 강화 아이템인 '능력치 파편'을 확률적으로 획득할 수 있습니다.\n인벤토리에 있는 파편을 클릭하여 파편을 선택하세요!", 
                     true // 유저가 읽고 클릭하여 다음 행동(실전 드래그 마우스 활성화)으로 넘어가도록 유도
                 );
 
@@ -1147,8 +1224,8 @@ function spawnShard(scene, x, y, forcedType = null, forcedValue = null, minMult 
     // 파편 컨테이너 생성 (이미지 + 텍스트)
     const texture = finalType === 'ATK' ? 'shard_atk' : (finalType === 'DEF' ? 'shard_def' : 'shard_hp');
     const shardImg = scene.add.sprite(0, 0, texture);
-    const shardTxt = scene.add.text(0, 30, `${finalType} +${finalValue}`, { 
-        fontSize: '16px', 
+    const shardTxt = scene.add.text(0, 60, `${finalType} +${finalValue}`, { 
+        fontSize: '40px', 
         fill: textColor,
         fontStyle: 'bold',
         stroke: '#000000',
@@ -1156,7 +1233,7 @@ function spawnShard(scene, x, y, forcedType = null, forcedValue = null, minMult 
     }).setOrigin(0.5);
     
     const container = scene.add.container(x, y, [shardImg, shardTxt]);
-    shardImg.setScale(0.25);
+    shardImg.setScale(0.25 * upscale);
 
   
     
@@ -1164,18 +1241,33 @@ function spawnShard(scene, x, y, forcedType = null, forcedValue = null, minMult 
     container.shardValue = finalValue; // 이 수치는 스테이지가 변해도 유지됨
     
     // 5. 자동으로 인벤토리로 이동하는 Tween 로직 (기존 성공한 코드 유지)
-    const targetX = 80 + (shards.getChildren().length * 70);
+    const targetX = 100 + (shards.getChildren().length * 180);
     scene.tweens.add({
         targets: container,
         x: targetX,
         y: INVEN_Y,
-        duration: 600,
+        duration: 800,
         ease: 'Cubic.out',
         onComplete: () => {
             // 도달 완료 시점에만 드래그 및 히트박스 활성화 (에러 원천 차단)
-            container.setInteractive(new Phaser.Geom.Rectangle(-30, -40, 60, 80), Phaser.Geom.Rectangle.Contains);
-            scene.input.setDraggable(container);
+            container.setInteractive(new Phaser.Geom.Rectangle(-30 * upscale, -40* upscale, 60 * upscale, 80 * upscale + 10), Phaser.Geom.Rectangle.Contains);
+           // scene.input.setDraggable(container); 기존 드래그 앤 드롭 방식
             container.originalInvenX = targetX; 
+
+            container.on('pointerdown', () => {
+                if (isChoosingReward) return; // 보상 선택 창이 열려있으면 조작 방지
+
+                // 이미 선택되어 있던 파편이 있다면 원래 상태(색상, 크기)로 되돌림
+                if (selectedShard && selectedShard.active) {
+                    selectedShard.setScale(1.0); 
+                }
+
+                // 현재 클릭한 파편을 '선택 상태'로 지정
+                selectedShard = container;
+
+                container.setScale(1.2);
+                
+            });
         }
     });
 
@@ -1184,42 +1276,26 @@ function spawnShard(scene, x, y, forcedType = null, forcedValue = null, minMult 
 
 }
 
-function collectToInventory(scene, shard) {
-    shard.isCollected = true;
-    scene.input.setDraggable(shard); // 인벤토리에 들어온 후에만 드래그 가능하게 설정
 
-    // 인벤토리 내 위치 계산 (현재 인벤토리에 있는 파편 수를 세어 정렬)
-    const invenX = 100 + (shards.countActive(true) * 60); 
-    
-    // Tween을 사용하여 부드럽게 인벤토리로 이동 (선택 사항)
-    scene.tweens.add({
-        targets: shard,
-        x: invenX,
-        y: INVEN_Y,
-        duration: 300,
-        ease: 'Power2'
-    });
-}
-
-// 드롭 처리 (거리 기반 가까운 아군에게 부여)
-function handleDrop(scene, shard) {
-    // [안전장치] 보상 창이 열려있는 상태라면 유닛 탐색도 하지 말고 즉시 인벤토리로 복귀시킴
+// 드롭 처리: 터치로 유닛에게 파편 부여
+function handleTouchDrop(scene, shard, clickX, clickY) {
+    // [안전장치] 보상 창이 열려있는 상태라면 즉시 취소하고 복귀
     if (isChoosingReward) {
-        scene.tweens.add({
-            targets: shard,
-            x: shard.originalInvenX || shard.x,
-            y: INVEN_Y,
-            duration: 200
-        });
-        return; // 함수 여기서 종료 (이 아래 로직은 실행도 안 됨)
+        if (shard && shard.active) {
+            shard.setScale(1.0);
+        }
+        selectedShard = null;
+        return; 
     }
     
     let closestHero = null;
-    let minDist = 60;
+    // 💡 업스케일링(1920x1200)된 해상도 비율에 맞춰 유동적인 자석 인식 범위 설정
+    let minDist = 60 * upscale; // 60에서 조금 더 넉넉하게 보정하여 터치 편의성 상향
 
+    // 💡 터치한 좌표(clickX, clickY)와 영웅들 간의 거리를 계산합니다.
     heroes.children.iterate(hero => {
         if (!hero.active) return;
-        let dist = Phaser.Math.Distance.Between(shard.x, shard.y, hero.x, hero.y);
+        let dist = Phaser.Math.Distance.Between(clickX, clickY, hero.x, hero.y);
         if (dist < minDist) {
             minDist = dist;
             closestHero = hero;
@@ -1227,24 +1303,60 @@ function handleDrop(scene, shard) {
     });
 
     if (closestHero) {
+        // 강화 성공! (효과음은 applyStat 내부에 있으므로 그대로 연동)
+        shardEffect(scene, closestHero.x, closestHero.y, shard.shardType);
         applyStat(scene, closestHero, shard.shardType, shard.shardValue);
+        
+
+        // 사용한 파편 제거 및 상태 초기화
         safeDestroyShard(shard);
+        selectedShard = null;
         
         // [튜토리얼 4단계 성공 검증 적용]
         if (tutorialStep === 4) {
-            tutorialStep = 5; // 5단계(스테이지 클리어 및 유닛 선택 화면 등장 페이즈)로 진입
-        
+            tutorialStep = 5; 
             triggerTutorialRewardPhase(scene); 
         }
     } else {
-        // 원래 인벤토리 위치로 복귀 (shard에 저장해둔 원래 x값을 쓰거나 다시 계산)
-        scene.tweens.add({
-            targets: shard,
-            x: shard.originalInvenX || shard.x, // 생성 시점에 저장해두면 좋음
-            y: INVEN_Y,
-            duration: 200
-        });
+        // 💡 근처에 영웅이 없어서 실패한 경우: 파편 이펙트를 원래대로 되돌리고 선택 해제
+        shard.setScale(1.0);
+        selectedShard = null;
     }
+}
+
+function shardEffect (scene, heroX, heroY, shardType) {
+    const fx = scene.add.graphics();
+    fx.setDepth(1999); // 전장 및 UI보다 무조건 위에 보이도록 깊이 설정
+
+    // 2. 트윈 제어용 임시 상태 객체
+    const fxState = { radius: 10, alpha: 0.8 };
+    let fxcolor = null;
+    if (shardType == 'HP') fxcolor = 0xFF2121;       // 빨간색
+    else if (shardType == 'ATK') fxcolor = 0x2424FF;  // 파란색
+    else fxcolor = 0x24FF45;                          // 초록색
+
+
+    // 3. 실시간으로 원을 그려주는 트윈 연동
+    scene.tweens.add({
+        targets: fxState,
+        radius: 70 * upscale, // 1920 해상도에 맞춰 이펙트 크기 유동적 확장
+        alpha: 0,
+        duration: 450,                // 0.35초 동안 빠르게 퍼짐
+        ease: 'Cubic.out',
+        onUpdate: () => {
+            fx.clear();
+            // 선 스타일 (두께 3px, 흰색 혹은 연한 하늘색 0x00ffff)
+            fx.lineStyle(6 * upscale, fxcolor, fxState.alpha);
+            fx.strokeCircle(heroX, heroY, fxState.radius);
+
+            //내부 채우기
+            fx.fillStyle(fxcolor, fxState.alpha * 0.5);
+            fx.fillCircle(heroX, heroY, fxState.radius);
+        },
+        onComplete: () => {
+            fx.destroy(); // 애니메이션이 끝나면 메모리에서 깔끔하게 제거
+        }
+    });
 }
 
 //파편 제거 함수 추가
@@ -1284,7 +1396,7 @@ function rearrangeInventory(scene) {
     let i = 0;
     shards.children.iterate(shard => {
         if (shard && shard.active) {
-            const targetX = 80 + (i * 70);
+            const targetX = 100 + (i * 180);
             shard.originalInvenX = targetX; // 복귀 좌표 업데이트
             scene.tweens.add({
                 targets: shard,
@@ -1375,10 +1487,10 @@ function processUnitGroup(scene, myGroup, targetGroup, time) {
 
         if (unit.statText)  {
             if (unit.stats.class == 'slime_giant') {
-                unit.statText.setPosition(unit.x, unit.y - 150);
+                unit.statText.setPosition(unit.x, unit.y - 300);
             }
             else {
-                unit.statText.setPosition(unit.x, unit.y - 50);
+                unit.statText.setPosition(unit.x, unit.y - 100);
             }
         }
     });
@@ -1407,15 +1519,17 @@ function triggerStageClear(scene) {
     scene.physics.pause();
 
     // 반투명 배경(오버레이)
-    const overlay = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setDepth(10).setInteractive();//클릭 못하도록 막음
-    const title = scene.add.text(400, 150, `STAGE ${currentStage} CLEAR!`, { fontSize: '40px', fill: '#fff', padding: { top: 10, bottom: 10 }, stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(11);
-    const subTitle = scene.add.text(400, 200, "보상을 선택하세요", { fontSize: '20px', fill: '#ddd', padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(11);
+    const overlay = scene.add.rectangle(960, 600, 1920, 1200, 0x000000, 0.7).setDepth(10).setInteractive();//클릭 못하도록 막음
+    const title = scene.add.text(960, 300, `STAGE ${currentStage} CLEAR!`, { fontSize: '80px', fill: '#fff', padding: { top: 10, bottom: 10 },
+    fontStyle: 'bold', stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(11);
+    const subTitle = scene.add.text(960, 420, "보상을 선택하세요", { fontSize: '48px', fill: '#ddd', padding: { top: 5, bottom: 5 }, 
+    fontStyle: 'bold',stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(11);
 
     const rewardOptions = [];
     const types = ['ATK', 'DEF', 'HP'];
     for (let i = 0; i < 3; i++) {
         const type = types[i]; // 혹은 랜덤
-        const xPos = 200 + (i * 200);
+        const xPos = 480 + (i * 480);
         
         // 1. 기본 수치 계산
         let baseValue = (type === 'ATK') ? 7 + Math.floor(currentStage * 0.9) : 
@@ -1427,13 +1541,14 @@ function triggerStageClear(scene) {
         const cardColor = getShardColor(mult);
 
         // 중요: spawnShard를 호출하지 않고 여기서 보상 전용 객체를 직접 만듭니다.
-        const option = createRewardCard(scene, xPos, 350, type, baseValue, cardColor);
+        const option = createRewardCard(scene, xPos, 700, type, baseValue, cardColor);
         option.setDepth(11);
         
         option.on('pointerdown', () => {
             // 1. 선택한 보상을 실제 인벤토리 파편으로 변환하여 생성
             // 이때 spawnShard를 호출하면 자동으로 인벤토리에 들어갑니다.
-            spawnShard(scene, option.x, option.y, option.cardType, option.cardValue, null, null, cardColor); 
+            spawnShard(scene, option.x, option.y, option.cardType, option.cardValue, null, null, cardColor);
+            createSelectEffect(scene, option.x, option.y); 
 
             // 2. UI 제거
             overlay.destroy();
@@ -1456,8 +1571,8 @@ function createRewardCard(scene, x, y, type, value, color) {
     const texture = (type === 'ATK') ? 'shard_atk' : (type === 'DEF') ? 'shard_def' : 'shard_hp';
     const img = scene.add.sprite(0, 0, texture);
     // 전달받은 value, color를 화면에 표시
-    const txt = scene.add.text(0, 35, `${type} +${value}`, { 
-        fontSize: '18px', 
+    const txt = scene.add.text(0, 80, `${type} +${value}`, { 
+        fontSize: '44px', 
         fill: color,
         fontStyle: 'bold',
         stroke: '#000000',
@@ -1465,8 +1580,8 @@ function createRewardCard(scene, x, y, type, value, color) {
     }).setOrigin(0.5);
     
     const container = scene.add.container(x, y, [img, txt]);
-    img.setScale(0.4);
-    container.setSize(100, 120);
+    img.setScale(0.8);
+    container.setSize(200, 240);
     container.setInteractive();
 
     container.cardType = type;
@@ -1482,9 +1597,9 @@ function triggerHeroRecruitment(scene) {
     scene.physics.pause();
 
     // 뒷배경 어둡게 (블커)
-    const blocker = scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setDepth(20);
-    const title = scene.add.text(400, 100, "새로운 아군 영입", {
-        fontSize: '32px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 }, stroke: '#000', strokeThickness:6
+    const blocker = scene.add.rectangle(960, 600, 1920, 1200, 0x000000, 0.7).setDepth(20);
+    const title = scene.add.text(960, 240, "새로운 아군 영입", {
+        fontSize: '64px', fill: '#ffffff', fontStyle: 'bold', padding: { top: 10, bottom: 10 }, stroke: '#000', strokeThickness:6
     }).setOrigin(0.5).setDepth(21);
 
     const classes = ['WARRIOR', 'ARCHER', 'MAGE'];
@@ -1494,9 +1609,9 @@ function triggerHeroRecruitment(scene) {
     for (let i = 0; i < 3; i++) {
         // 무작위 클래스 선정 (중복 허용 혹은 완전 랜덤)
         const randomClass = classes[Math.floor(Math.random() * classes.length)];
-        const xPos = 200 + (i * 200);
+        const xPos = 480 + (i * 480);
 
-        const card = createHeroRecruitCard(scene, xPos, 300, randomClass);
+        const card = createHeroRecruitCard(scene, xPos, 480, randomClass);
         card.setDepth(21);
 
         card.on('pointerdown', () => {
@@ -1504,7 +1619,8 @@ function triggerHeroRecruitment(scene) {
             const actualTexture = UNIT_TEMPLATES[card.unitClass].texture;
             // 클릭 시 해당 랸덤 스탯을 가진 유닛 전장에 생성!
             // 기존 spawnHero를 쓰되, 이미 계산된 finalStats를 주입하도록 응용합니다.
-            createUnit(scene, -400, 300, actualTexture, heroes, card.finalStats);
+            createSelectEffect(scene, card.x, card.y);
+            createUnit(scene, -400, 600, actualTexture, heroes, card.finalStats);
 
             // UI 청소
             blocker.destroy();
@@ -1584,17 +1700,17 @@ function createHeroRecruitCard(scene, x, y, unitClass) {
             img.setScale(1.0); // 임시 사각형 등은 원본 크기 유지
         }
 
-    const titleTxt = scene.add.text(0, -80, `${unitClass} (★${Math.floor(unitValue)})`, {
-        fontSize: '18px', fill: cardColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4
+    const titleTxt = scene.add.text(0, -160, `${unitClass} (★${Math.floor(unitValue)})`, {
+        fontSize: '36px', fill: cardColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4
     }).setOrigin(0.5).setDepth(2);
 
     // 개별 텍스트로 쪼개서 생성 (Y 좌표를 20px 간격으로 아래로 나열)
-    const hpTxt = scene.add.text(0, 120, `HP: ${finalStats.hp}`, { fontSize: '18px', fill: hpColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
-    const atkTxt = scene.add.text(0, 140, `ATK: ${finalStats.atk}`, { fontSize: '18px', fill: atkColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
-    const defTxt = scene.add.text(0, 160, `DEF: ${finalStats.def}`, { fontSize: '18px', fill: defColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
+    const hpTxt = scene.add.text(0, 240, `HP: ${finalStats.hp}`, { fontSize: '36px', fill: hpColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
+    const atkTxt = scene.add.text(0, 280, `ATK: ${finalStats.atk}`, { fontSize: '36px', fill: atkColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
+    const defTxt = scene.add.text(0, 320, `DEF: ${finalStats.def}`, { fontSize: '36px', fill: defColor, fontStyle: 'bold',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(2);
 
     const container = scene.add.container(x, y, [img, titleTxt, hpTxt, atkTxt, defTxt]);
-    container.setSize(120, 180).setDepth(2);
+    container.setSize(240, 360).setDepth(2);
     container.setInteractive();
 
     // 컨테이너에 정보 저장
@@ -1615,7 +1731,7 @@ function startNextStage(scene) {
     heroes.children.iterate(hero => {
         hero.body.setVelocity(0);
         hero.x = -400;
-        hero.y = 300; // 아군 유닛들을 세로로 정렬
+        hero.y = 600; // 아군 유닛들을 세로로 정렬
         updateStatUI(hero); // 다음 스테이지 시작 전 스탯 최신화
         i++;
     });
@@ -1639,12 +1755,12 @@ function spawnEnemies(scene, currentStage) {
 
     for (let i = 0; i< enemyColumn; i++) {
         for (let j = 0; j<5; j++) {
-            createUnit(scene, 600+i*30, 50 + (j * 100), 'enemy', enemies, {
+            createUnit(scene, 1440+i*60, 100 + (j * 200), 'enemy', enemies, {
             hp: 40 + Math.floor(currentStage * hp_coefficient),
             atk: 5 + Math.floor(currentStage * atk_coefficient),
             def: 20 + Math.floor(currentStage * def_coefficient),
-            range: 50, speed: 60, as: 1500, class: 'slime',
-            scale: 0.2
+            range: 50 * upscale, speed: 60 * upscale, as: 1500, class: 'slime',
+            scale: 0.2* upscale
         });
         }
     }
@@ -1657,23 +1773,23 @@ function spawnEnemies(scene, currentStage) {
         else {
             array = -Math.floor(i/2)
         }
-        createUnit(scene, 600 + 30*enemyColumn, 250 + 100*array, 'enemy', enemies, {
+        createUnit(scene, 1440 + 60*enemyColumn, 500 + 200*array, 'enemy', enemies, {
             hp: 40 + Math.floor(currentStage * hp_coefficient),
             atk: 5 + Math.floor(currentStage * atk_coefficient),
             def: 20 + Math.floor(currentStage * def_coefficient),
-            range: 50, speed: 60, as: 1500, class: 'slime',
-            scale: 0.2
+            range: 50 * upscale, speed: 60 * upscale, as: 1500, class: 'slime',
+            scale: 0.2* upscale
             });
         }
     }
     //극후반부에 등장하는 거대 슬라임 인간
     else if (currentStage >= 50 && (currentStage%10 == 0)) {
-        createUnit(scene, 900, 250, 'enemy', enemies, {
+        createUnit(scene, 1700, 500, 'enemy', enemies, {
             hp: 2000 + Math.floor(currentStage * (hp_coefficient + 15) * enemyLevel),
             atk: 500 + Math.floor(currentStage * (atk_coefficient + 24) * enemyLevel),
             def: 200 + Math.floor(currentStage * enemyLevel),
-            range: 150, speed: 25, as: 5000, class: 'slime_giant',
-            scale: 0.7
+            range: 150 * upscale, speed: 25 * upscale, as: 5000, class: 'slime_giant',
+            scale: 0.7* upscale
         });
     }
     //30스테이지 이후부터 슬라임 인간 등장!
@@ -1686,12 +1802,12 @@ function spawnEnemies(scene, currentStage) {
         else {
             array = -Math.floor(i/2)
         }
-        createUnit(scene, 600 + 45*enemyColumn, 200 + 120*array, 'enemy', enemies, {
+        createUnit(scene, 1440 + 90*enemyColumn, 400 + 240*array, 'enemy', enemies, {
             hp: 500 + Math.floor(currentStage * (hp_coefficient + 5 * enemyLevel)),
             atk: 80 + Math.floor(currentStage * (atk_coefficient + 2 * enemyLevel)),
             def: 30 + Math.floor(currentStage * (def_coefficient + 1 * enemyLevel)),
-            range: 80, speed: 40 + 2 * enemyLevel, as: Math.max(200, 1200 - 50 * enemyLevel), class: 'slime_human',
-            scale: 0.25
+            range: 80 * upscale, speed: (40 + 2 * enemyLevel) * upscale, as: Math.max(200, 1200 - 50 * enemyLevel), class: 'slime_human',
+            scale: 0.25* upscale
             });
         }
     }
@@ -1740,9 +1856,9 @@ function triggerGameOver(scene) {
     scene.physics.pause();
     if (currentBgm) currentBgm.stop(); // 흐르던 BGM을 엄숙하게 정지
     scene.sound.play('sfx_game_over', { volume: 0.7 });
-    scene.add.rectangle(400, 300, 800, 600, 0x000000, 0.8).setDepth(20);
-    scene.add.text(400, 300, 'GAME OVER', { fontSize: '64px', fill: '#ff0000',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(21);
-    scene.add.text(400, 400, 'Click to Restart', { fontSize: '20px',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(21);
+    scene.add.rectangle(960, 600, 1920, 1200, 0x000000, 0.8).setDepth(20);
+    scene.add.text(960, 600, 'GAME OVER', { fontSize: '128px', fill: '#ff0000',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:6 }).setOrigin(0.5).setDepth(21);
+    scene.add.text(960, 800, 'Click to Restart', { fontSize: '40px',padding: { top: 5, bottom: 5 }, stroke: '#000', strokeThickness:4 }).setOrigin(0.5).setDepth(21);
     
     scene.input.once('pointerdown', () => {
         window.location.reload(); // 간단한 재시작 로직
