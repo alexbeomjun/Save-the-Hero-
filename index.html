@@ -23,15 +23,19 @@
         }
 
         #game-container {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
         /* 🚨 무분별한 !important를 제거하여 Phaser의 스케일 매니저와 충돌을 방지합니다. */
         canvas {
+            margin: 0 auto !important;
             image-rendering: pixelated; /* 모바일 크기 변화 시 흐려짐 방지 */
             -webkit-tap-highlight-color: transparent; /* 모바일 터치 시 푸른 반투명 박스 제거 */
         }
